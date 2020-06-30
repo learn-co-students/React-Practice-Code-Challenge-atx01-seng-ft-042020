@@ -13,7 +13,8 @@ class App extends Component {
     this.state = {
       sushi: [],
       conveyorPosition: 0,
-      budget: 200
+      budget: 200,
+      emptyPlates: []
     }
   }
 
@@ -29,9 +30,14 @@ class App extends Component {
   }
 
   eatSushi = (sushi) => {
-    if (this.state.budget >= sushi.price && sushi.eaten === undefined) {
-      sushi.eaten = true
-      this.setState({ budget: this.state.budget - sushi.price })
+    if (this.state.budget >= sushi.price && !sushi.eaten) {
+
+      let newSushi = this.state.sushi.map(s => {
+        s.eaten = (s === sushi || s.eaten) 
+        return s
+      })
+
+      this.setState({ emptyPlates: [...this.state.emptyPlates, 'plate'], sushi: newSushi, budget: this.state.budget - sushi.price })
     }
   }
 
@@ -45,7 +51,7 @@ class App extends Component {
       <div className="app">
         <SushiContainer sushi={this.state.sushi.slice(this.state.conveyorPosition*4, this.state.conveyorPosition*4+4)}
           incrementConveyor={this.incrementConveyor} eatSushi={this.eatSushi} />
-        <Table budget={this.state.budget}/>
+        <Table emptyPlates={this.state.emptyPlates} budget={this.state.budget}/>
         <Wallet addMoney={this.addMoney} />
       </div>
     );
